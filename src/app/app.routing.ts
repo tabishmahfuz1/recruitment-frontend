@@ -14,13 +14,9 @@ export const AppRoutes: Routes = [
         {
       path: '',
       loadChildren: './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
-  }]},
-  {
-    path: 'resume-repositoy',
-    loadChildren: './profile/profile.module#ProfileModule'
-  },
+  }]}/*,
   {
     path: '**',
     redirectTo: 'dashboard'
-  }
+  }*/
 ]
