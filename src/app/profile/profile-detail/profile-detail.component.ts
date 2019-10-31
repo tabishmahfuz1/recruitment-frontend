@@ -7,6 +7,10 @@ import { FormGroup, FormBuilder, Validators, FormControl } from "@angular/forms"
 import {Observable} from 'rxjs/Observable';
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
+
+import { ProfileService } from '../profile.service';
+
+
 @Component({
   selector: 'app-profile-detail',
   templateUrl: './profile-detail.component.html',
@@ -24,14 +28,15 @@ export class ProfileDetailComponent implements OnInit {
  	@ViewChild('resetProfileForm', { static: true }) myNgForm;
   constructor(
   	public fb: FormBuilder,
-    private router: Router) { 
+    private router: Router,
+    private profileService: ProfileService) { 
 
   	this.profileCtrl = new FormControl();
 
   	this.filteredProfiles = this.profileCtrl.valueChanges
   	.pipe(
   		startWith(''),
-        map(profile => profile ? this.filterProfiles(profile) : this.profiles.slice())
+      map(profile => profile ? this.filterProfiles(profile) : this.profiles.slice())
   	)
 
 
@@ -39,6 +44,9 @@ export class ProfileDetailComponent implements OnInit {
 
 
   filterProfiles(name: string) {
+    this.profileForm.get('profile').setValue(name, {
+      onlyself: true
+    })
     return this.profiles.filter(profile =>
       profile.toLowerCase().indexOf(name.toLowerCase()) === 0);
   }
@@ -55,9 +63,29 @@ export class ProfileDetailComponent implements OnInit {
       profile: ['', [Validators.required]],
       skills: [this.skillsArray],
       dob: ['', [Validators.required]],
-      gender: ['Male']
+      gender: ['Male'],
+      resume: [null, [Validators.required]]
     })
   }
+
+  onFileChange(event) {
+  let reader = new FileReader();
+ 
+  if(event.target.files && event.target.files.length) {
+    const [file] = event.target.files;
+    reader.readAsDataURL(file);
+  
+    reader.onload = () => {
+      this.profileForm.patchValue({
+        resume: reader.result
+      });
+      // Also try to get resume parsed data here..
+      console.log({file: reader.result})
+      // need to run CD since file load runs outside of zone
+      // this.cd.markForCheck();
+    };
+  }
+}
 
   /* Add dynamic skills */
   add(event: MatChipInputEvent): void {
@@ -98,9 +126,13 @@ export class ProfileDetailComponent implements OnInit {
   }  
 
   submitProfileForm(){
+    console.log("Hey")
+    console.log({form: this.profileForm});
+
   	if (this.profileForm.valid) {
   		console.log({form: this.profileForm});
-
+      this.profileService.saveProfile(this.profileForm.value)
+      .subscribe(data => console.log(data));
   		// Hadle form Submission
     }
   }

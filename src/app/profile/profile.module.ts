@@ -6,6 +6,7 @@ import { ProfileListComponent } from './profile-list/profile-list.component';
 import { ProfileDetailComponent } from './profile-detail/profile-detail.component';
 import { ProfilesRoutes } from './profile.routing';
 import { AngularMaterialModule } from '../material.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [ProfileListComponent, ProfileDetailComponent],
@@ -14,7 +15,8 @@ import { AngularMaterialModule } from '../material.module';
     RouterModule.forChild(ProfilesRoutes),
     FormsModule,
     ReactiveFormsModule,
-    AngularMaterialModule
+    AngularMaterialModule,
+    HttpClientModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
