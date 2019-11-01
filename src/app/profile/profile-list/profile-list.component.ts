@@ -8,9 +8,9 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./profile-list.component.scss']
 })
 export class ProfileListComponent implements OnInit {
-	profileList: Observable<any>;
+	profileList$: Observable<any>;
   	constructor(private profileService: ProfileService) { 
-  		this.profileList = this.profileService.getProfiles();
+  		this.profileList$ = this.profileService.getProfiles();
   	}
 
   	ngOnInit() {

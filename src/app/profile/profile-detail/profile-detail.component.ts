@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { FormGroup, FormBuilder, Validators, FormControl } from "@angular/forms";
@@ -10,6 +10,7 @@ import {map} from 'rxjs/operators/map';
 
 import { ProfileService } from '../profile.service';
 
+import { Profile } from '../types';
 
 @Component({
   selector: 'app-profile-detail',
@@ -23,13 +24,36 @@ export class ProfileDetailComponent implements OnInit {
 	profiles: string[] = ["Java Developer", "Software Engineer", "Golang Developer"];
 	profileCtrl: FormControl;
 	filteredProfiles: Observable<any[]>;
+  id: string;
+
+  profile: Profile = {
+    _id: null,
+    name: '',
+    email: '',
+    profile: '',
+    skills: [],
+    dob: null,
+    gender: 'Male',
+    resume: null
+  };
+
   	readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 	@ViewChild('skillList', { static: true }) skillList;
  	@ViewChild('resetProfileForm', { static: true }) myNgForm;
   constructor(
   	public fb: FormBuilder,
     private router: Router,
-    private profileService: ProfileService) { 
+    private profileService: ProfileService,
+    private route: ActivatedRoute) { 
+
+    route.params.subscribe((p) => {
+      this.id = p.id;
+      this.profile._id = this.id;
+    });
+
+    if( this.id ) {
+      this.fetchProfile();
+    }
 
   	this.profileCtrl = new FormControl();
 
@@ -64,31 +88,18 @@ export class ProfileDetailComponent implements OnInit {
       skills: [this.skillsArray],
       dob: ['', [Validators.required]],
       gender: ['Male'],
-      resume: [null, [Validators.required]]
+      resume: [null, (this.isNewProfile? [Validators.required] : [])]
     })
   }
 
-  	onFileChange(event) {
+  onFileChange(event) {
 	  let reader = new FileReader();
 	 
 	  if(event.target.files && event.target.files.length) {
 	    const [file] = event.target.files;
 	    this.profileForm.patchValue({
-		    resume: file
-		});
-    console.log({file})
-		console.log(this.profileForm.value)
-	    // reader.readAsDataURL(file);
-	  
-	    // reader.onload = () => {
-	    //   this.profileForm.patchValue({
-	    //     resume: reader.result
-	    //   });
-	    //   // Also try to get resume parsed data here..
-	    //   console.log({file: reader.result})
-	    //   // need to run CD since file load runs outside of zone
-	    //   // this.cd.markForCheck();
-	    // };
+  		    resume: file
+  		});
 	  }
 	}
 
@@ -119,9 +130,11 @@ export class ProfileDetailComponent implements OnInit {
   /* Date */
   formatDate(e) {
     var convertDate = new Date(e.target.value).toISOString().substring(0, 10);
-    this.profileForm.get('dob').setValue(convertDate, {
+    this.profileForm.get('dob').setValue(e.target.value, {
       onlyself: true
     })
+
+    console.log(this.profileForm.get('dob').value)
   }  
 
 
@@ -129,6 +142,22 @@ export class ProfileDetailComponent implements OnInit {
   public handleError = (controlName: string, errorName: string) => {
     return this.profileForm.controls[controlName].hasError(errorName);
   }  
+
+
+  fetchProfile() {
+    this.profileService
+        .getProfile(this.id)
+        .subscribe( profile =>  {
+          this.profile = profile;
+          profile.resume = null;
+          this.profileForm.patchValue(profile);
+          this.skillsArray = this.profile.skills;
+          this.isNewProfile = false;
+          let resumeControl = this.profileForm.get('resume');
+          resumeControl.clearValidators();
+          resumeControl.updateValueAndValidity();
+        });
+  }
 
   submitProfileForm(){
     console.log("Hey")
@@ -147,8 +176,9 @@ export class ProfileDetailComponent implements OnInit {
           profileData.append(key, elem)
         });
         console.log(profileData)
-      } else if ( data instanceof Object ) {
+      } else if ( data instanceof Object && ( ! (data instanceof Date) ) ) {
         Object.keys(data).forEach((elem, k) => profileData.append(`${key}[${k}]`, elem));
+
       } else {
         profileData.append(key, data)
       }
@@ -160,15 +190,18 @@ export class ProfileDetailComponent implements OnInit {
       profileData.set('resume', this.profileForm.get('resume').value);
     }
 
-    // console.log("Prepared ProfileData", Array.from(profileData.entries()))
+    if ( this.id ) {
+      profileData.set('_id', this.id);
+    }
+
+    console.log("Prepared ProfileData", this.profileForm.valid)
     // return '';
   	if (this.profileForm.valid) {
   		// console.log({form: this.profileForm.value});
       this.profileService.saveProfile(profileData)
       .subscribe(data => {
-        this.router.navigateByUrl('/profile')
+        this.router.navigateByUrl('/profile/'+ data._id+'/edit')
       });
-  		// Hadle form Submission
     }
   }
 

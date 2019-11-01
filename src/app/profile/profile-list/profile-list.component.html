@@ -1,1 +1,41 @@
-<p>profile-list works!</p>
+<div class="main-content">
+  <div class="container-fluid">
+  	<div class="card" >
+  		<div class="card-header card-header-warning card-header-icon"> 
+          	<p class="card-title">Profile</p>
+      	</div>
+      	<div class="card-body">
+      		<table class="table table-bordered table-striped mr-5">
+      			<thead>
+      				<tr>
+      					<th>S.No.</th>
+      					<th>Name</th>
+      					<th>Email</th>
+      					<th>Profile</th>
+      					<th>Skills</th>
+      					<th>DOB</th>
+      					<th>Gender</th>
+      					<th>Action</th>
+      				</tr>
+      			</thead>
+      			<tbody>
+      				<tr *ngFor="let profile of profileList$ | async; let i = index">
+      					<td class="text-center">{{ i+1 }}</td>
+      					<td>{{ profile.name }}</td>
+      					<td>{{ profile.email }}</td>
+      					<td>{{ profile.profile }}</td>
+      					<td>{{ profile.skills.join(', ') }}</td>
+      					<td>{{ profile.dob }}</td>
+      					<td>{{ profile.gender }}</td>
+      					<td class="text-center">
+      						<a href="#" [routerLink]="'/profile/' + profile._id + '/edit'">
+      							<i class="fa fa-edit"></i>
+      						</a>
+      					</td>
+      				</tr>
+      			</tbody>
+      		</table>
+      	</div>
+  	</div>
+  </div>
+</div>

@@ -17,7 +17,8 @@
 			      <div class="controlers-wrapper">
 			        <!-- Name -->
 			        <mat-form-field class="col-md-3">
-			          <input matInput placeholder="Candidate Name" formControlName="name">
+			          <input matInput placeholder="Candidate Name" formControlName="name" 
+			          		>
 			          <mat-error *ngIf="handleError('name', 'required')">
 			            You must provide a<strong> name</strong>
 			          </mat-error>
@@ -25,7 +26,8 @@
 
 			        <!-- Email -->
 			        <mat-form-field class="col-md-3">
-			          <input matInput placeholder="Email" formControlName="email">
+			          <input matInput placeholder="Email" formControlName="email"
+			          		>
 			          <mat-error *ngIf="handleError('email', 'required')">
 			            You must provide an<strong> email</strong>
 			          </mat-error>
@@ -34,10 +36,12 @@
 			        <!-- Section -->
 			        <mat-form-field class="col-md-3">
 			          	<mat-label>Profile</mat-label>
-			          	<input type="text" placeholder="Profile" aria-label="Number" matInput formControlName="profile" [matAutocomplete]="auto" [formControl]="profileCtrl">
+			          	<input type="text" placeholder="Profile" aria-label="Number" matInput 
+			          			formControlName="profile" [matAutocomplete]="auto" [formControl]="profileCtrl"
+			          			>
 			          	<mat-autocomplete #auto="matAutocomplete" >
-						  	<mat-option *ngFor="let profile of filteredProfiles | async" [value]="profile">
-						    	{{ profile }}
+						  	<mat-option *ngFor="let prof of filteredProfiles | async" [value]="prof">
+						    	{{ prof }}
 						  	</mat-option>
 						</mat-autocomplete>
 			          	<mat-error *ngIf="handleError('profile', 'required')">
@@ -50,24 +54,7 @@
 			    <!-- Right block -->
 			    <mat-card>
 			      <div class="controlers-wrapper">
-			        <!-- Add subjects -->
-			        <mat-form-field class="multiple-items" class="col-md-3">
-			          <mat-chip-list #skillList>
-			            <mat-chip *ngFor="let skill of skillsArray" [selectable]="selectable" [removable]="removable"
-			              (removed)="remove(skill)">
-			              {{skill}}
-			              <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-			            </mat-chip>
-			            <input placeholder="Add skill" [matChipInputFor]="skillList"
-			              [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
-			              (matChipInputTokenEnd)="add($event)" >
-			          </mat-chip-list>
-			          <i class="material-icons tooltip-info" matTooltip="Enter Skill and press enter to add skills">
-			            info
-			          </i>
-			        </mat-form-field>
-
-			        <!-- Date of birth -->
+			      	<!-- Date of birth -->
 			        <mat-form-field class="col-md-3">
 			          <input matInput readonly [matDatepicker]="picker" placeholder="Date of birth" formControlName="dob"
 			            (dateChange)="formatDate($event)">
@@ -77,20 +64,40 @@
 			            Date of birth is required
 			          </mat-error>
 			        </mat-form-field>
-
+			        <!-- Add subjects -->
+			        <mat-form-field class="multiple-items" class="col-md-3">
+			          <mat-chip-list #skillList>
+			            <mat-chip *ngFor="let skill of skillsArray" [selectable]="selectable" [removable]="true"
+			              (removed)="remove(skill)">
+			              {{skill}}
+			              <mat-icon matChipRemove>cancel</mat-icon>
+			            </mat-chip>
+			            <input placeholder="Add skill" [matChipInputFor]="skillList"
+			              [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+			              (matChipInputTokenEnd)="add($event)" >
+			          </mat-chip-list>
+			          <i class="material-icons tooltip-info" matTooltip="Enter Skill and press enter to add skills">
+			            info
+			          </i>
+			        </mat-form-field>
 			        <!-- Gender -->
-			        <div class="misc-bottom-padding col-md-3">
+			        <div class="col-md-3">
 			          <mat-label>Gender:</mat-label>
-			          <mat-radio-group aria-label="Select an option" formControlName="gender">
-			            <mat-radio-button value="Male">Male</mat-radio-button>
-			            <mat-radio-button value="Female">Female</mat-radio-button>
-			          </mat-radio-group>
-			        </div>
-			      </div>
+				          <mat-radio-group aria-label="Select an option" formControlName="gender">
+				            <mat-radio-button value="Male">Male</mat-radio-button>
+				            <mat-radio-button value="Female">Female</mat-radio-button>
+				          </mat-radio-group>
+				        </div>
+				      </div>
 			      	<div class="col-md-3">
 		        		<label>Resume</label>
+		        		<div class="card">
+		        			<a *ngIf="! isNewProfile" [href]="profile.resume"><strong>View Uploaded Resume</strong></a>	
+		        		</div>
+		        		
 		        		<input type="file" (change)="onFileChange($event)"  />
 		        	</div>
+			        
 			    </mat-card>
 			  
 			</div>
