@@ -13,9 +13,20 @@ export class ProfileService {
   constructor(
   	private http: HttpClient) { }
 
-
+  /**
+  * Save the profile to Server
+  *
+  */
   saveProfile(profile): Observable<any> {
   	return this.http.post<any>(`${API_ENDPOINT}/new`, profile);
+  }
+
+  /**
+  * Return the list of Profiles
+  *
+  */
+  getProfiles(): Observable<any> {
+  	return this.http.get<any>(`${API_ENDPOINT}/`);
   }
 
 
