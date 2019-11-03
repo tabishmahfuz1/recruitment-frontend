@@ -30,6 +30,7 @@ export class ProfileDetailComponent implements OnInit {
     _id: null,
     name: '',
     email: '',
+    phone: '',
     profile: '',
     skills: [],
     dob: null,
@@ -84,9 +85,10 @@ export class ProfileDetailComponent implements OnInit {
     this.profileForm = this.fb.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required]],
-      profile: ['', [Validators.required]],
+      phone: ['', []],
+      profile: ['', []],
       skills: [this.skillsArray],
-      dob: ['', [Validators.required]],
+      dob: ['', []],
       gender: ['Male'],
       resume: [null, (this.isNewProfile? [Validators.required] : [])]
     })
