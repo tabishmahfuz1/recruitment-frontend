@@ -161,32 +161,34 @@ export class ProfileDetailComponent implements OnInit {
         });
   }
 
-  submitProfileForm(){
-    console.log("Hey")
-    console.log({form: this.profileForm});
-    let profileData = new FormData();
 
-    Object.keys(this.profileForm.value).forEach(key => {
+  ObjectToFormData(Obj: Object, formData: FormData = new FormData()): FormData{
+    Object.keys(Obj).forEach(key => {
 
-      let data = this.profileForm.get(key).value;
+      let data = Obj[key];
       // profileData.append(key, data)
       console.log("Reading", key, data)
 
       if ( data instanceof Array ) {
         data.forEach(elem => {
           console.log("e", elem)
-          profileData.append(key, elem)
+          formData.append(key, elem)
         });
-        console.log(profileData)
+        console.log(formData)
       } else if ( data instanceof Object && ( ! (data instanceof Date) ) ) {
-        Object.keys(data).forEach((elem, k) => profileData.append(`${key}[${k}]`, elem));
+        Object.keys(data).forEach((elem, k) => formData.append(`${key}[${k}]`, elem));
 
       } else {
-        profileData.append(key, data)
+        formData.append(key, data)
       }
 
     });
 
+    return formData;
+  }
+
+  submitProfileForm(){
+    let profileData: FormData = this.ObjectToFormData(this.profileForm.value);
 
     if ( ! profileData.has('resume') ) {
       profileData.set('resume', this.profileForm.get('resume').value);
@@ -196,10 +198,7 @@ export class ProfileDetailComponent implements OnInit {
       profileData.set('_id', this.id);
     }
 
-    console.log("Prepared ProfileData", this.profileForm.valid)
-    // return '';
   	if (this.profileForm.valid) {
-  		// console.log({form: this.profileForm.value});
       this.profileService.saveProfile(profileData)
       .subscribe(data => {
         this.router.navigateByUrl('/profile/'+ data._id+'/edit')
